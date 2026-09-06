@@ -6,7 +6,7 @@ import java.math.RoundingMode;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FeeBStrategy implements FeeStrategy{
+public class FeeBOneToTenDaysStrategy implements FeeStrategy{
 	
 	@Override 
 	public boolean isApplicable(BigDecimal amount, long daysBetween) {

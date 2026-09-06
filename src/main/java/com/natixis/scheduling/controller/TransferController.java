@@ -4,11 +4,14 @@ import com.natixis.scheduling.dto.TransferRequestDTO;
 import com.natixis.scheduling.dto.TransferResponseDTO;
 import com.natixis.scheduling.service.TransferService;
 import jakarta.validation.Valid;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -53,5 +56,27 @@ public class TransferController {
     public ResponseEntity<Void> deleteTransfer(@PathVariable Long id) {
         service.deleteTransfer(id);
         return ResponseEntity.noContent().build();
+    }
+    
+    @GetMapping("/by-account")
+    public ResponseEntity<List<TransferResponseDTO>> findByAccount(
+            @RequestParam String account) {
+
+        return ResponseEntity.ok(service.findByAccount(account));
+    }
+    
+    @GetMapping("/by-date-range")
+    public ResponseEntity<List<TransferResponseDTO>> findByDateRange(
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate startDate,
+
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate endDate) {
+
+        return ResponseEntity.ok(
+                service.findByDateRange(startDate, endDate)
+        );
     }
 }

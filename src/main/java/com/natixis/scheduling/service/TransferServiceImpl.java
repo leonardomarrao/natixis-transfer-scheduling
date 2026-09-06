@@ -95,4 +95,33 @@ public class TransferServiceImpl implements TransferService {
             transfer.getTransferDate()
         );
     }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<TransferResponseDTO> findByAccount(String account) {
+        return repository
+                .findBySourceAccountOrDestinationAccount(account, account)
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<TransferResponseDTO> findByDateRange(
+            LocalDate startDate,
+            LocalDate endDate) {
+
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException(
+                "A data inicial não pode ser posterior à data final."
+            );
+        }
+
+        return repository
+                .findByTransferDateBetween(startDate, endDate)
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
+    }
 }

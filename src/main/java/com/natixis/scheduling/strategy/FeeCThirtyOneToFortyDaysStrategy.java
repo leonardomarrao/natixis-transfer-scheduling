@@ -6,17 +6,17 @@ import java.math.RoundingMode;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FeeC2Strategy implements FeeStrategy{
+public class FeeCThirtyOneToFortyDaysStrategy implements FeeStrategy{
 
 	@Override
 	public boolean isApplicable(BigDecimal amount, long daysBetween) {
 		return amount.compareTo(new BigDecimal("2000")) > 0
-				&& daysBetween >= 21 & daysBetween <= 30;
+				&& daysBetween >= 31 && daysBetween <= 40;
 	}
 
 	@Override
 	public BigDecimal calculate(BigDecimal amount) {
-		return amount.multiply(new BigDecimal("0.069")).setScale(2, RoundingMode.HALF_UP);
+		return amount.multiply(new BigDecimal("0.047")).setScale(2, RoundingMode.HALF_UP);
 	}
 	
 

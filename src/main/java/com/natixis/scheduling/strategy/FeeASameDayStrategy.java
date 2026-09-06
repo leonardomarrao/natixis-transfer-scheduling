@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @Component
-public class FeeAStrategy implements FeeStrategy{
+public class FeeASameDayStrategy implements FeeStrategy{
 	
 	@Override 
 	public boolean isApplicable(BigDecimal amount, long daysBetween) {

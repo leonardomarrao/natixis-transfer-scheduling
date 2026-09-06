@@ -5,18 +5,19 @@ import java.math.RoundingMode;
 
 import org.springframework.stereotype.Component;
 
+
 @Component
-public class FeeC3Strategy implements FeeStrategy{
+public class FeeCElevenToTwentyDaysStrategy implements FeeStrategy{
 
 	@Override
 	public boolean isApplicable(BigDecimal amount, long daysBetween) {
 		return amount.compareTo(new BigDecimal("2000")) > 0
-				&& daysBetween >= 31 & daysBetween <= 40;
+				&& daysBetween >= 11 && daysBetween <= 20;
 	}
 
 	@Override
 	public BigDecimal calculate(BigDecimal amount) {
-		return amount.multiply(new BigDecimal("0.047")).setScale(2, RoundingMode.HALF_UP);
+		return amount.multiply(new BigDecimal("0.082")).setScale(2, RoundingMode.HALF_UP);
 	}
 	
 
