@@ -1,0 +1,362 @@
+{
+  "info": {
+    "_postman_id": "0d6fe1df-04cf-4cc9-b7f7-natixis-scheduling",
+    "name": "Natixis - Transfer Scheduling API",
+    "description": "Postman collection for the Natixis transfer scheduling challenge.\n\nBase URL: {{baseUrl}}\n\nRecommended execution order:\n1. Create Transfer\n2. Get All Transfers\n3. Get Transfer By ID\n4. Update Transfer\n5. Find Transfers By Account\n6. Find Transfers By Date Range\n7. Delete Transfer\n\nThe Create request automatically stores the returned id in the {{transferId}} collection variable.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "function formatDate(date) {",
+          "    return date.toISOString().split('T')[0];",
+          "}",
+          "",
+          "function addDays(date, days) {",
+          "    const result = new Date(date);",
+          "    result.setUTCDate(result.getUTCDate() + days);",
+          "    return result;",
+          "}",
+          "",
+          "const now = new Date();",
+          "pm.collectionVariables.set('today', formatDate(now));",
+          "pm.collectionVariables.set('plus5Days', formatDate(addDays(now, 5)));",
+          "pm.collectionVariables.set('plus15Days', formatDate(addDays(now, 15)));",
+          "pm.collectionVariables.set('plus25Days', formatDate(addDays(now, 25)));",
+          "pm.collectionVariables.set('plus35Days', formatDate(addDays(now, 35)));",
+          "pm.collectionVariables.set('plus45Days', formatDate(addDays(now, 45)));",
+          "pm.collectionVariables.set('rangeStart', formatDate(addDays(now, -1)));",
+          "pm.collectionVariables.set('rangeEnd', formatDate(addDays(now, 60)));"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "transferId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "account",
+      "value": "123456",
+      "type": "string"
+    },
+    {
+      "key": "today",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "plus5Days",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "plus15Days",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "plus25Days",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "plus35Days",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "plus45Days",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "rangeStart",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "rangeEnd",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1 - Create Transfer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sourceAccount\": \"123456\",\n  \"destinationAccount\": \"654321\",\n  \"amount\": 500.0,\n  \"transferDate\": \"{{today}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/transfers",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "transfers"
+          ]
+        },
+        "description": "Creates a same-day transfer using Fee A (3% + €3)."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 201 Created', function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('Response contains an id', function () {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json.id).to.exist;",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "if (json.id) {",
+              "    pm.collectionVariables.set('transferId', json.id);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2 - Get All Transfers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/transfers",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "transfers"
+          ]
+        },
+        "description": "Returns all scheduled transfers."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3 - Get Transfer By ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/transfers/{{transferId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "transfers",
+            "{{transferId}}"
+          ]
+        },
+        "description": "Returns a transfer by id. Uses the id saved by Create Transfer."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4 - Update Transfer",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sourceAccount\": \"123456\",\n  \"destinationAccount\": \"999999\",\n  \"amount\": 800.0,\n  \"transferDate\": \"{{today}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/transfers/{{transferId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "transfers",
+            "{{transferId}}"
+          ]
+        },
+        "description": "Updates the transfer created by request 1."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5 - Find Transfers By Account",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/transfers/by-account?account={{account}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "transfers",
+            "by-account"
+          ],
+          "query": [
+            {
+              "key": "account",
+              "value": "{{account}}"
+            }
+          ]
+        },
+        "description": "Finds transfers where the account is either the source or destination account."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "6 - Find Transfers By Date Range",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/transfers/by-date-range?startDate={{rangeStart}}&endDate={{rangeEnd}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "transfers",
+            "by-date-range"
+          ],
+          "query": [
+            {
+              "key": "startDate",
+              "value": "{{rangeStart}}"
+            },
+            {
+              "key": "endDate",
+              "value": "{{rangeEnd}}"
+            }
+          ]
+        },
+        "description": "Finds transfers whose transferDate is between the supplied dates."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "7 - Delete Transfer",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/transfers/{{transferId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "transfers",
+            "{{transferId}}"
+          ]
+        },
+        "description": "Deletes the transfer created by request 1."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 204 No Content', function () {",
+              "    pm.response.to.have.status(204);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
